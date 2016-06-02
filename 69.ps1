@@ -4,6 +4,31 @@ $primeProducts = New-Object "int32[]" $length # contains a prime factor for the 
 $totients = New-Object "int32[]" $length
 $highestMultiplicand = New-Object "int32[]" $length # Index i has calculated indices up to the number at highestMultiplicand[i]
 
+<# If we track all distinct prime factors for a number (generating with sieve - add to stack at correct spot in array)
+   We can calculate each totient using totient(n) = n*powerseries(prime factors p of n): 1-1/p
+
+   Credit - Euler's Product Formula: https://en.wikipedia.org/wiki/Euler%27s_totient_function#Computing_Euler.27s_totient_function
+
+   Pseudo: 
+
+   fillSieve: 
+   * when marking $composite, also add $i to the end of $primeFactors[$j]
+
+   calculateTotientNew($n){
+       if(!$composite[$n]){ return $n-1 }
+
+       $product = $n
+       foreach($prime in $primeFactors[$n]){
+           $product *= 1 - 1/$prime
+       }
+
+       return $product
+   }
+#>
+$primeFactors = New-Object System.Collections.ArrayList[] $length 
+
+$primeFactors[1].Add(1)
+
 # Fills in sieve up to len indexes. Assumes len <= sieve.Length.
 function fillSieve($len){ 
     $limit = [Math]::Sqrt($len)
