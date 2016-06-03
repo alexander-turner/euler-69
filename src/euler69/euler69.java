@@ -1,43 +1,40 @@
 package euler69;
 
 import java.util.*;
-import java.lang.Math;
 
 class Ideone{
 
-    static int length = 1000;
-    static int[] totients = new int[length+1];
-    static List<List<Integer>> primeFactors = new ArrayList<List<Integer>>(length+1);
-    
+    static int length = (int) 1e6;
+    static double[] totients = new double[length+1];
     static boolean[] composite = new boolean[length+1]; // sieve
+    static List<List<Integer>> primeFactors = new ArrayList<List<Integer>>(length+1);
     
     public static void main(String[] args){
         fillSieve();
         
-        for(Integer prime : primeFactors.get(30))
-        	System.out.println(prime);
-        System.out.println(calculateTotient(30));
-        int max = 0, maxN = 0, temp;
+        int maxN = 0;
+        double max = 0, temp = 0;
     
-        /*for(int i=2; i<=length; i++){
-            temp = calculateTotient(i);
+        for(int i=2; i<=length; i++){
+            temp = i/calculateTotient(i);
             if(temp > max){
                 max = temp;
                 maxN = i;
             }
-        }*/
+        }
 
         System.out.println("The maximum totient(n) (for 2 <= n <= " + length + ") is "+ maxN);
     }
     
     // Fills the sieve (composite) and generates prime factors up to length
     static void fillSieve(){
-        for(int i=0; i<=length; i++)
+        for(int i=0; i<=length; i++){
+        	totients[i] = 0;
             primeFactors.add(i, new ArrayList<Integer>()); // intialize lists
-
-        int limit = (int) Math.sqrt(length);
+        }
+        int limit = length/2;
     
-        for(int i=2; i<limit; i++)
+        for(int i=2; i<=limit; i++)
             if(!composite[i])
                 for(int j=2*i; j<=length; j+=i){
                     composite[j] = true; // mark as non-prime
@@ -51,17 +48,15 @@ class Ideone{
     We can calculate each totient using 
      totient(n) = n*powerseries(prime factors p of n): 1-1/p
     */ 
-    static int calculateTotient(int n){
+    static double calculateTotient(int n){
         if(totients[n] != 0) {
             //do nothing, already calculated
         } else if(!composite[n]){
             totients[n] = n-1;
         } else {
-            int product = n;
-            for(Integer prime : primeFactors.get(n)){
-                product *= (1 - 1/prime);
-                System.out.println(product);
-            }
+            double product = n;
+            for(Integer prime : primeFactors.get(n))
+                product *= 1 - ((double) 1/prime);
             
             totients[n] = product;
         }
